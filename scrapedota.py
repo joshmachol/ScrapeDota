@@ -6,13 +6,14 @@
 import concurrent.futures
 import urllib.request
 import operator
-import bs4
 import random
 import json
+import bs4
 import re
 
 
 MAX_WORKERS = 4;
+
 
 def soupify(url):
     print("soupifying '{}'".format(url))
