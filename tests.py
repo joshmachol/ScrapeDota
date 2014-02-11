@@ -4,17 +4,15 @@
 """
 
 import unittest
-from scrapedota import get_hero_urls, soupify, scrape_hero
+from scrapedota import scrape_heroes
 
 class TestScrape(unittest.TestCase):
 
     def setUp(self):
-        urls = get_hero_urls(3)
-        self.soups = list(map(soupify, urls))
+        pass
 
     def test_scrape_hero(self):
-        heroes = [scrape_hero(s) for s in self.soups]
-
+        heroes = scrape_heroes(3)
         for h in heroes:
             self.assertTrue(h.img_url and h.img_url != '')
             self.assertTrue(h.portrait_img_url and h.portrait_img_url != '')
@@ -32,12 +30,14 @@ class TestScrape(unittest.TestCase):
             self.assertTrue(h.sight_range and h.sight_range != '')
             self.assertTrue(h.atk_range and h.atk_range != '')
             self.assertTrue(h.missile_spd and h.missile_spd != '')
-
             for a in h.abilities:
                 self.assertTrue(a.img_url and a.img_url != '')
                 self.assertTrue(a.name and a.name != '')
                 self.assertTrue(a.description and a.description != '')
-
                 for d in a.details:
                     self.assertTrue(d.name and d.name != '')
                     self.assertTrue(d.detail and d.detail != '')
+
+
+if __name__ == '__main__':
+    unittest.main()
