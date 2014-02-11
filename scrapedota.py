@@ -116,7 +116,7 @@ def _scrape_hero_abilities(soup_, hero_id):
     return [_scrape_hero_ability(d, hero_id) for d in divs]
 
 
-def scrape_hero(soup_):
+def _scrape_hero(soup_):
     print(("scraping '{}'"
            .format(soup_.find(id='centerColContent').find('h1').string)))
     h = Hero()
