@@ -4,6 +4,11 @@
 """
 
 import unittest
+"""
+    Copyright (c) 2013 Josh Machol
+    MIT, see LICENSE for more details.
+"""
+
 from scrapedota import scrape_heroes
 
 class TestScrape(unittest.TestCase):
