@@ -1,8 +1,6 @@
 ScrapeDota
 =======
-Sunfish is a simple, but strong chess engine, written in Python, mostly for teaching purposes. Without tables and its simple interface, it takes up just 111 lines of code!
-
-The great clarity of the Sunfish code provides a great platform for experimenting, be it with evaluation functions, chess heuristics or search. Fork it today and see what you can do!
+ScrapeDota is a simple web scraper which gets the latest hero data from www.dota2.com/heroes.
 
 Run it!
 =======
