@@ -12,7 +12,7 @@ import bs4
 import re
 
 
-MAX_WORKERS = 4;
+MAX_WORKERS = 4
 
 
 def soupify(url):
@@ -58,7 +58,7 @@ class Hero:
         self.sight_range = ''
         self.atk_range = ''
         self.missile_spd = ''
-        self.abilities = [] # list of type Ability
+        self.abilities = []  # list of type Ability
 
 
 class Ability:
@@ -72,7 +72,7 @@ class Ability:
         self.lore = ''
         self.mana_cost = ''
         self.cooldown = ''
-        self.details = [] # list of type AbilityDetail
+        self.details = []  # list of type AbilityDetail
 
 
 class AbilityDetail:
@@ -104,7 +104,7 @@ def _scrape_hero_ability(ability_soup, hero_id):
         a.cooldown = list(cooldown_soup.stripped_strings)[1]
     details_soup = ability_soup.find(class_='abilityFooterBoxRight')
     details = list(details_soup.stripped_strings)
-    for name,detail in zip(details[::2], details[1::2]):
+    for name, detail in zip(details[::2], details[1::2]):
         d = AbilityDetail(a.ability_id)
         d.name = name[:-1]
         d.detail = detail
@@ -113,7 +113,7 @@ def _scrape_hero_ability(ability_soup, hero_id):
 
 
 def _scrape_hero_abilities(soup_, hero_id):
-    divs = soup_(class_ = 'abilitiesInsetBoxContent')
+    divs = soup_(class_='abilitiesInsetBoxContent')
     return [_scrape_hero_ability(d, hero_id) for d in divs]
 
 
@@ -151,9 +151,9 @@ def _scrape_hero(soup_):
     return h
 
 
-def scrape_heroes(sample_size = None):
+def scrape_heroes(sample_size=None):
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as e:
-        future_heros = [e.submit(scrape_hero, h) for h in get_hero_soups(sample_size)]
+        future_heros = [e.submit(_scrape_hero, h) for h in get_hero_soups(sample_size)]
         for future in concurrent.futures.as_completed(future_heros):
             yield future.result()
 
@@ -162,8 +162,8 @@ if __name__ == '__main__':
     print('scraping heroes')
     heroes = list(scrape_heroes())
     print('encoding heroes to JSON')
-    json = json.dumps(heroes, separators = (',',':'),
-                      default = operator.attrgetter("__dict__"))
+    json = json.dumps(heroes, separators=(',', ':'),
+                      default=operator.attrgetter("__dict__"))
     f = open('heroes_json.txt', 'w')
     print('writing JSON to file "heroes_json.txt')
     f.write(json)
