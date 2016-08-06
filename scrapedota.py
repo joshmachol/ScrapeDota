@@ -12,26 +12,31 @@ import bs4
 import re
 
 
-MAX_WORKERS = 4
+MAX_WORKERS = 8
 
 
 def soupify(url):
     print("soupifying '{}'".format(url))
     page = urllib.request.urlopen(url)
-    return bs4.BeautifulSoup(page)
+    soup = bs4.BeautifulSoup(page, "html.parser")
+    if not soup:
+        raise ValueError("soup is '{}'", soup)
+    return soup
 
 
-def get_hero_urls(sample_size=None):
+def get_hero_urls(sample_size=None, hero_url=None):
     soup = soupify("http://www.dota2.com/heroes/")
     tags = soup(href=re.compile("http://www.dota2.com/hero/"))
+    if hero_url:
+        tags = [t for t in tags if t['href'].find(hero_url) > 0]
     if sample_size:
         tags = random.sample(tags, sample_size)
     return [t['href'] for t in tags]
 
 
-def get_hero_soups(sample_size=None):
+def get_hero_soups(sample_size=None, hero_url=None):
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as e:
-        future_soups = [e.submit(soupify, url) for url in get_hero_urls(sample_size)]
+        future_soups = [e.submit(soupify, url) for url in get_hero_urls(sample_size, hero_url)]
         for future in concurrent.futures.as_completed(future_soups):
             yield future.result()
 
@@ -89,10 +94,10 @@ def _scrape_hero_ability(ability_soup, hero_id):
     if vid_soup:
         iframe = vid_soup.find('iframe')
         a.vid_url = iframe['src']
-    a.name = (ability_soup.find(class_='abilityHeaderRowDescription')
-              .find('h2').string)
-    a.description = (ability_soup.find(class_='abilityHeaderRowDescription')
-                     .find('p').string)
+    ability_row_description = (ability_soup.find(class_='abilityHeaderRowDescription') or
+                               ability_soup.find(class_='overviewAbilityRowDescription'))
+    a.name = ability_row_description.find('h2').string
+    a.description = ability_row_description.find('p').text.rstrip()
     lore_soup = ability_soup.find(class_='abilityLore')
     if lore_soup:
         a.lore = lore_soup.string
@@ -151,9 +156,9 @@ def _scrape_hero(soup_):
     return h
 
 
-def scrape_heroes(sample_size=None):
+def scrape_heroes(sample_size=None, hero_url=None):
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as e:
-        future_heros = [e.submit(_scrape_hero, h) for h in get_hero_soups(sample_size)]
+        future_heros = [e.submit(_scrape_hero, h) for h in get_hero_soups(sample_size, hero_url)]
         for future in concurrent.futures.as_completed(future_heros):
             yield future.result()
 

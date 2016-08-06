@@ -17,7 +17,7 @@ class TestScrape(unittest.TestCase):
         pass
 
     def test_scrape_hero(self):
-        heroes = scrape_heroes(3)
+        heroes = scrape_heroes()
         for h in heroes:
             self.assertTrue(h.img_url and h.img_url != '')
             self.assertTrue(h.portrait_img_url and h.portrait_img_url != '')
